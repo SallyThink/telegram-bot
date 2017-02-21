@@ -2,6 +2,7 @@
 
 namespace App\Conversation\Answers;
 
+use App\Conversation\CheckWay;
 use App\Entity\State;
 use App\Message;
 use App\Parser\FinalStops;
@@ -15,9 +16,7 @@ class Route extends AbstractAnswer
 
     public function __construct(State $state)
     {
-        $minstrans = new Minsktrans($state->getType(), $state->getNumber());
-
-        $this->finalStops = $minstrans->getFinalStops();
+        $this->finalStops = CheckWay::getRoutes($state);
     }
 
     public function answer($userId)

@@ -52,7 +52,7 @@ class Redis implements IKeeper
         switch($type) {
             case 'Автобус':
                 return 'Autobus';
-            case 'Тролейбус':
+            case 'Троллейбус':
                 return 'Trolleybus';
             case 'Трамвай':
                 return 'Tramway';

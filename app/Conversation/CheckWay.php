@@ -17,7 +17,7 @@ class CheckWay
             'number' => $state->getNumber(),
         ];
 
-        $route = Route::where($vars)->get()->first();
+        $route = (new Route())->checkRoute($vars);
 
         if(null === $route) {
             $minsktrans = new Minsktrans($vars['type'], $vars['number']);
@@ -38,17 +38,17 @@ class CheckWay
             'route' => $state->getRoute(),
         ];
 
-        $route = Stop::where($vars)->get()->first();
+        $stop = (new Stop())->getStop($vars);
 
-        if(null === $route) {
+        if(null === $stop) {
             $minsktrans = new Minsktrans($vars['type'], $vars['number']);
             $stops = $minsktrans->getAllStops($vars['route']);
 
             $vars['stops'] = $stops;
-            $route = Stop::create($vars);
+            $stop = Stop::create($vars);
         }
 
-        return $route->getAttribute('stops');
+        return $stop->getAttribute('stops');
     }
 
     public static function getTime(State $state)
@@ -60,16 +60,16 @@ class CheckWay
             'stop' => $state->getStop()
         ];
 
-        $route = Time::where($vars)->get()->first();
+        $time = (new Time())->getTime($vars);
 
-        if(null === $route) {
+        if(null === $time) {
             $minsktrans = new Minsktrans($vars['type'], $vars['number']);
             $time = $minsktrans->getTime($vars['route'], $vars['stop']);
 
             $vars['time'] = $time;
-            $route = Time::create($vars);
+            $time = Time::create($vars);
         }
 
-        return $route->getAttribute('time');
+        return $time->getAttribute('time');
     }
 }

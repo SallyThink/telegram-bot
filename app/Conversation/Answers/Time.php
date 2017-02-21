@@ -2,6 +2,7 @@
 
 namespace App\Conversation\Answers;
 
+use App\Conversation\CheckWay;
 use App\Entity\State;
 use App\Message;
 use App\Parser\Minsktrans;
@@ -14,8 +15,7 @@ class Time extends AbstractAnswer
 
     public function __construct(State $state)
     {
-        $minsktrans = new Minsktrans($state->getType(), $state->getNumber());
-        $allTime = $minsktrans->getTime($state->getRoute(), $state->getStop());
+        $allTime = CheckWay::getTime($state);
 
         $now = Carbon::now('Europe/Minsk');
         $hour = $now->hour;

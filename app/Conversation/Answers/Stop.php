@@ -2,6 +2,7 @@
 
 namespace App\Conversation\Answers;
 
+use App\Conversation\CheckWay;
 use App\Entity\State;
 use App\Message;
 use App\Parser\Minsktrans;
@@ -15,9 +16,7 @@ class Stop extends AbstractAnswer
 
     public function __construct(State $state)
     {
-        $minsktrans = new Minsktrans($state->getType(), $state->getNumber());
-
-        $this->validation = $minsktrans->getAllStops($state->getRoute());
+        $this->validation = CheckWay::getStops($state);
 
         foreach($this->validation as $v)
         {

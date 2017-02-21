@@ -2,11 +2,12 @@
 
 namespace App\Parser;
 
+use App\Exceptions\ParserException;
 use Carbon\Carbon;
 
 class Minsktrans
 {
-    protected $url = 'http://www.minsktrans.by/pda/index.php?&submit=+OK+';
+    protected $url = 'http://www.minsktrans.by/pda/index.php';
 
     protected $day;
 
@@ -39,7 +40,33 @@ class Minsktrans
 
     protected function init()
     {
-        $this->body = file_get_contents($this->url . '&n=' . $this->number . '&Transport=' . $this->type . '&day=' . $this->day);
+        $url = $this->url . '?submit=+OK+' . '&n=' . $this->number . '&Transport=' . $this->type . '&day=' . $this->day;
+        $this->body = $this->curl($url);
+    }
+    protected function curl($url)
+    {
+        $headers =[
+            'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language:ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
+        ];
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3013.3 Safari/537.36");
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$headers);
+        curl_setopt($ch, CURLOPT_REFERER, $this->url);
+        curl_setopt($ch, CURLOPT_REFERER, $url);
+        curl_setopt($ch, CURLOPT_COOKIEJAR, "");
+        curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        if(false === $result) {
+            throw new ParserException();
+        }
+
+        return $result;
     }
 
     /**
@@ -113,7 +140,8 @@ class Minsktrans
         $this->parseRoutes();
         $this->parseAllStops($route);
 
-        $body = file_get_contents('http://www.minsktrans.by/pda/index.php' . $this->allStops[1][array_search($stop, $this->allStops[2])]);
+        $url = $this->url . $this->allStops[1][array_search($stop, $this->allStops[2])];
+        $body = $this->curl($url);
 
         preg_match_all('/<b>([0-9]*)<\/b> :?  ([0-9 ]*)/', str_replace(['<u>', '</u>'], '', $body), $m);
 
