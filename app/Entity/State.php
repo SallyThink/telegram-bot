@@ -7,6 +7,10 @@ class State
     /**
      * @var string
      */
+    protected $context;
+    /**
+     * @var string
+     */
     protected $state;
     /**
      * @var string
@@ -29,6 +33,22 @@ class State
      */
     protected $time;
 
+    /**
+     * @param string $context
+     * @return State
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+        return $this;
+    }
+    /**
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
     /**
      * @param string $state
      * @return State
@@ -67,7 +87,7 @@ class State
      */
     public function setNumber($number)
     {
-        $this->number = $number;
+        $this->number = (int)$number;
         return $this;
     }
     /**

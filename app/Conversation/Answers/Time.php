@@ -51,14 +51,8 @@ class Time extends AbstractAnswer
         return $state;
     }
 
-    /**
-     * @param Message $message
-     * @return \Illuminate\Validation\Validator
-     */
-    public function validation(Message $message)
+    protected function getRules()
     {
-        $validation = \Validator::make(['time' => $message->message] , ['time' => 'required']);
-
-        return $validation;
+        return ['time' => 'required'];
     }
 }

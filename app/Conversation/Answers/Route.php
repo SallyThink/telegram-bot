@@ -4,6 +4,7 @@ namespace App\Conversation\Answers;
 
 use App\Conversation\CheckWay;
 use App\Entity\State;
+use App\Exceptions\ParserException;
 use App\Message;
 use App\Parser\FinalStops;
 use App\Parser\Minsktrans;
@@ -49,14 +50,8 @@ class Route extends AbstractAnswer
         return $state;
     }
 
-    /**
-     * @param Message $message
-     * @return \Illuminate\Validation\Validator
-     */
-    public function validation(Message $message)
+    protected function getRules()
     {
-        $validation = \Validator::make(['route' => $message->message] , ['route' => ['required', Rule::in($this->finalStops)]]);
-
-        return $validation;
+        return ['route' => ['required', Rule::in($this->finalStops)]];
     }
 }

@@ -32,14 +32,9 @@ class Number extends AbstractAnswer
         return $state;
     }
 
-    /**
-     * @param Message $message
-     * @return \Illuminate\Validation\Validator
-     */
-    public function validation(Message $message)
-    {
-        $validation = \Validator::make(['number' => $message->message] , ['number' => 'required|integer']);
 
-        return $validation;
+    protected function getRules()
+    {
+        return ['number' => 'required|integer'];
     }
 }

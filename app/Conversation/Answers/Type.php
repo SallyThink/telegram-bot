@@ -8,7 +8,6 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class Type extends AbstractAnswer
 {
-
     public function answer($userId)
     {
       $return = [
@@ -39,14 +38,8 @@ class Type extends AbstractAnswer
         return $state;
     }
 
-    /**
-     * @param Message $message
-     * @return \Illuminate\Validation\Validator
-     */
-    public function validation(Message $message)
+    protected function getRules()
     {
-        $validation = \Validator::make(['transport' => $message->message] , ['transport' => 'required|in:Автобус,Троллейбус,Трамвай']);
-
-        return $validation;
+        return ['transport' => 'required|in:Автобус,Троллейбус,Трамвай'];
     }
 }

@@ -15,28 +15,30 @@ class Redis implements IKeeper
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @param State $state
      * @return State
      */
-    public function fill($id, State $state)
+    public function fill(int $id, State $state)
     {
-        $state->setState((string)$this->redis->hGet($id, 'state'));
-        $state->setType((string)$this->redis->hGet($id, 'type'));
-        $state->setNumber((int)$this->redis->hGet($id, 'number'));
-        $state->setRoute((string)$this->redis->hGet($id, 'route'));
-        $state->setStop((string)$this->redis->hGet($id, 'stop'));
-        $state->setTime((string)$this->redis->hGet($id, 'time'));
+        $state->setContext($this->redis->hGet($id, 'context'));
+        $state->setState($this->redis->hGet($id, 'state'));
+        $state->setType($this->redis->hGet($id, 'type'));
+        $state->setNumber($this->redis->hGet($id, 'number'));
+        $state->setRoute($this->redis->hGet($id, 'route'));
+        $state->setStop($this->redis->hGet($id, 'stop'));
+        $state->setTime($this->redis->hGet($id, 'time'));
 
         return $state;
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @param State $state
      */
-    public function save($id, State $state)
+    public function save(int $id, State $state)
     {
+        $this->redis->hSet($id, 'context', $state->getContext());
         $this->redis->hSet($id, 'state', $state->getState());
         $this->redis->hSet($id, 'type', $this->translate($state->getType()));
         $this->redis->hSet($id, 'number', $state->getNumber());
@@ -60,22 +62,9 @@ class Redis implements IKeeper
         return $type;
     }
 
-    public function setState($id, $state)
-    {
-        $this->redis->hSet($id, 'state', $state);
-    }
-
-    public function remove($id)
+    public function remove(int $id)
     {
         $this->redis->del($id);
-    }
-    /**
-     * @param integer $id
-     * @return string
-     */
-    public function getState($id)
-    {
-        return (string)$this->redis->hGet($id, 'state');
     }
 
     public function setParam($id, $param, $val)

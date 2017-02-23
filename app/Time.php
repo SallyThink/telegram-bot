@@ -9,7 +9,7 @@ class Time extends Model
     protected $fillable = ['type', 'number', 'route', 'stop', 'time'];
     protected $casts = ['time' => 'json'];
 
-    public function getTime($vars)
+    public function checkTime($vars)
     {
         return $this->where($vars)->get()->first();
     }

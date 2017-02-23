@@ -10,7 +10,11 @@ class Stop extends Model
 
     protected $casts = ['stops' => 'json'];
 
-    public function getStop($vars)
+    /**
+     * @param array $vars
+     * @return \Eloquent|null
+     */
+    public function checkStop($vars)
     {
         return $this->where($vars)->get()->first();
     }

@@ -6,10 +6,17 @@ use App\Entity\State;
 
 interface IKeeper
 {
-    public function getState($id);
-    public function setState($id, $state);
-    public function fill($id, State $state);
-    public function save($id, State $state);
-
+    /**
+     * @param int $id
+     * @param State $state
+     * @return State
+     */
+    public function fill(int $id, State $state);
+    /**
+     * @param int $id
+     * @param State $state
+     */
+    public function save(int $id, State $state);
+    public function remove(int $id);
 
 }

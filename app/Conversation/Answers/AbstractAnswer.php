@@ -11,25 +11,50 @@ abstract class AbstractAnswer
 {
     public function __construct(){}
 
+    /**
+     * @param int $userId
+     * @return array
+     */
     abstract public function answer($userId);
 
     /**
-     * @param Message $message
-     * @return Validator
+     * @param State $state
+     * @param string|int $val
+     * @return State
      */
-    abstract public function validation(Message $message);
+    abstract public function setParam(State $state, $val);
 
     /**
-     * @param Validator $validator
+     * @return array
+     */
+    abstract protected function getRules();
+
+    /**
+     * @param Message $message
+     * @return bool|string
+     */
+    public function validation(Message $message)
+    {
+        $rules = $this->getRules();
+        $validation = \Validator::make([key($rules) => $message->message] , $rules);
+        $errors = $validation->errors();
+        if($errors->count() > 0) {
+            return $errors->first();
+        }
+        return true;
+    }
+
+    /**
+     * @param string $errorMessage
      * @param $userId
      *
      * @return array
      */
-    public function sendError(Validator $validator, $userId)
+    public function sendError(string $errorMessage, $userId)
     {
         $return = [
             'chat_id' => $userId,
-            'text' => $validator->errors()->first(),
+            'text' => $errorMessage,
             'reply_markup' => Keyboard::hide()
             ];
 

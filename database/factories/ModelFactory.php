@@ -12,13 +12,11 @@
 */
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
-$factory->define(App\User::class, function (Faker\Generator $faker) {
-    static $password;
+$factory->define(App\Route::class, function (Faker\Generator $faker) {
 
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'password' => $password ?: $password = bcrypt('secret'),
-        'remember_token' => str_random(10),
+        'type' => $faker->name,
+        'number' => $faker->randomNumber(),
+        'routes' => $faker->word,
     ];
 });

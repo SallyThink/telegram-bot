@@ -10,6 +10,11 @@ use App\Time;
 
 class CheckWay
 {
+
+    /**
+     * @param State $state
+     * @return array
+     */
     public static function getRoutes(State $state)
     {
         $vars = [
@@ -30,6 +35,10 @@ class CheckWay
         return $route->getAttribute('routes');
     }
 
+    /**
+     * @param State $state
+     * @return array
+     */
     public static function getStops(State $state)
     {
         $vars = [
@@ -38,7 +47,7 @@ class CheckWay
             'route' => $state->getRoute(),
         ];
 
-        $stop = (new Stop())->getStop($vars);
+        $stop = (new Stop())->checkStop($vars);
 
         if(null === $stop) {
             $minsktrans = new Minsktrans($vars['type'], $vars['number']);
@@ -51,6 +60,10 @@ class CheckWay
         return $stop->getAttribute('stops');
     }
 
+    /**
+     * @param State $state
+     * @return array
+     */
     public static function getTime(State $state)
     {
         $vars = [
@@ -60,7 +73,7 @@ class CheckWay
             'stop' => $state->getStop()
         ];
 
-        $time = (new Time())->getTime($vars);
+        $time = (new Time)->checkTime($vars);
 
         if(null === $time) {
             $minsktrans = new Minsktrans($vars['type'], $vars['number']);
@@ -72,4 +85,5 @@ class CheckWay
 
         return $time->getAttribute('time');
     }
+
 }

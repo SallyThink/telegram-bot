@@ -8,7 +8,11 @@ class Route extends \Eloquent
     protected $fillable = ['type', 'number', 'routes'];
     protected $casts = ['routes' => 'json'];
 
-    public function checkRoute($vars)
+    /**
+     * @param array $vars
+     * @return \Eloquent|null
+     */
+    public function checkRoute(array $vars)
     {
         return $this->where($vars)->get()->first();
     }

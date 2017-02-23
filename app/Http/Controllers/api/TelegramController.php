@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Conversation\Answers\Route;
 use App\Conversation\CheckWay;
 use App\Conversation\Conversation;
 use App\Conversation\Keeper\Redis\Redis;
@@ -11,11 +12,13 @@ use App\Http\Controllers\Controller;
 use App\Message;
 use App\Parser\Minsktrans;
 use App\User;
+use Illuminate\Validation\Rule;
 use League\Flysystem\Exception;
 use Telegram;
 
 class TelegramController extends Controller
 {
+
     public function start(User $user, Message $message)
     {
         $update = Telegram::bot()->getWebhookUpdate();
@@ -46,16 +49,17 @@ class TelegramController extends Controller
 
     public function test(Message $message, User $user)
     {
-       $state = new State();
-       $state->setNumber(17);
-       $state->setType('Autobus');
-       $state->setStop('Лобанка');
-       $state->setRoute('ДС Сухарево-5 - ДС Кунцевщина');
-        dd([
-            CheckWay::getRoutes($state),
-            CheckWay::getStops($state),
-            CheckWay::getTime($state)
-        ]);
+        $user->telegram_id = 221682466;
+        $message->message = 'Автобус';
+        $redis = new Redis();
+        //$state = $redis->fill($user->telegram_id, new State());
+        $conversation = new Conversation($user, $message, $redis);
+
+        try {
+            $conversation->start();
+        } catch (ParserException $e) {
+            $e->render($user->telegram_id);
+        }
     }
 
 }

@@ -52,14 +52,8 @@ class Stop extends AbstractAnswer
         return $state;
     }
 
-    /**
-     * @param Message $message
-     * @return \Illuminate\Validation\Validator
-     */
-    public function validation(Message $message)
+    protected function getRules()
     {
-        $validation = \Validator::make(['stop' => $message->message] , ['stop' => ['required', Rule::in($this->validation)]]);
-
-        return $validation;
+        return ['stop' => ['required', Rule::in($this->validation)]];
     }
 }
