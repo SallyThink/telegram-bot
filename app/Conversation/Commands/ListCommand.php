@@ -6,6 +6,6 @@ class ListCommand extends AbstractCommand implements ICommand
 {
     public function handle()
     {
-        
+
     }
 }

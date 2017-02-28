@@ -12,6 +12,7 @@ class General
         [
           CreateCommand::class => '/create',
           TimeCommand::class => '/gettime',
+          ListCommand::class => '/commands',
         ];
 
     public function run(User $user, Message $message, State $state)
@@ -36,5 +37,10 @@ class General
         $state = $getCommand->handle();
 
         return $state;
+    }
+
+    public function getTriggers()
+    {
+        return $this->triggers;
     }
 }

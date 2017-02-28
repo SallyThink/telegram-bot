@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Command;
 use App\Conversation\Answers\Route;
 use App\Conversation\CheckWay;
+use App\Conversation\Commands\General;
 use App\Conversation\Commands\GetCommand;
 use App\Conversation\Conversation;
 use App\Conversation\Keeper\Redis\Redis;
@@ -51,34 +52,7 @@ class TelegramController extends Controller
 
     public function test(Message $message, User $user)
     {
-        //dd(\DB::table('commands')->get());
-        $a = ['/create','/pq','Автобус','17','ДС Сухарево-5 - ДС Кунцевщина', 'Лобанка'];
-        $user->chat_id = 221682466;
-        $message->text = '76';
-
-
-        $redis = new Redis();
-        //$state = $redis->fill($user->chat_id, new State());
-        $conversation = new Conversation($user, $message, $redis);
-
-        try {
-            $conversation->start();
-        } catch (ParserException $e) {
-            $e->render($user->chat_id);
-            dd('error exception');
-        }
-
-        //dd(\DB::table('commands')->get());
-
-        $state = (new Redis())->fill(221682466);
-        dd([
-            'command' => $state->getCommand(),
-            'state' => $state->getState(),
-            'type' => $state->getType(),
-            'number' => $state->getNumber(),
-            'route' => $state->getRoute(),
-            'stop' => $state->getStop(),
-        ]);
+        
     }
 
 }

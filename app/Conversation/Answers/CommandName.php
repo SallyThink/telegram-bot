@@ -3,13 +3,13 @@
 namespace App\Conversation\Answers;
 
 use App\Command;
+use App\Conversation\Commands\General;
 use App\Entity\State;
 use Illuminate\Database\Eloquent\Model;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class CommandName extends AbstractAnswer
 {
-    protected $validation;
     protected $state;
 
     public function __construct(State $state = null)
@@ -47,8 +47,15 @@ class CommandName extends AbstractAnswer
             $commands[] = $name->command;
         }
 
-        $this->validation = implode(',', $commands);
+        $rules = implode(',', $commands);
 
-        return ['command_name' => 'required|regex:/^\/.+$/|not_in:/create' . $this->validation];
+        $triggers = (new General())->getTriggers();
+
+        foreach ($triggers as $trigger) {
+            $rules .= $trigger;
+        }
+
+
+        return ['command_name' => 'required|regex:/^\/.+$/|not_in:' . substr($rules, 0, -1)];
     }
 }
