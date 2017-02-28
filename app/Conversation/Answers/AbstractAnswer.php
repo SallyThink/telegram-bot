@@ -12,10 +12,9 @@ abstract class AbstractAnswer
     public function __construct(){}
 
     /**
-     * @param int $userId
      * @return array
      */
-    abstract public function answer($userId);
+    abstract public function answer();
 
     /**
      * @param State $state
@@ -36,9 +35,9 @@ abstract class AbstractAnswer
     public function validation(Message $message)
     {
         $rules = $this->getRules();
-        $validation = \Validator::make([key($rules) => $message->message] , $rules);
+        $validation = \Validator::make([key($rules) => $message->text] , $rules);
         $errors = $validation->errors();
-        if($errors->count() > 0) {
+        if ($errors->count() > 0) {
             return $errors->first();
         }
         return true;
@@ -46,14 +45,11 @@ abstract class AbstractAnswer
 
     /**
      * @param string $errorMessage
-     * @param $userId
-     *
      * @return array
      */
-    public function sendError(string $errorMessage, $userId)
+    public function sendError(string $errorMessage)
     {
         $return = [
-            'chat_id' => $userId,
             'text' => $errorMessage,
             'reply_markup' => Keyboard::hide()
             ];

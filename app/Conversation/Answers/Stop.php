@@ -5,7 +5,7 @@ namespace App\Conversation\Answers;
 use App\Conversation\CheckWay;
 use App\Entity\State;
 use App\Message;
-use App\Parser\Minsktrans;
+use App\Parser\Main;
 use Illuminate\Validation\Rule;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -18,17 +18,16 @@ class Stop extends AbstractAnswer
     {
         $this->validation = CheckWay::getStops($state);
 
-        foreach($this->validation as $v)
+        foreach ($this->validation as $v)
         {
             $this->allStops[] = [$v];
         }
     }
 
-    public function answer($userId)
+    public function answer()
     {
 
         $return = [
-            'chat_id' => $userId,
             'text' => 'Check',
             'reply_markup' => Keyboard::make([
                 'keyboard' => $this->allStops,

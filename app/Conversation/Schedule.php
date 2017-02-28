@@ -18,8 +18,9 @@ class Schedule
 {
     protected $user;
     protected $message;
+    protected $state;
 
-    protected $states =
+    protected $flows =
         [
             Type::class,
             Number::class,
@@ -28,49 +29,53 @@ class Schedule
             Time::class
         ];
 
-    public function handle(User $user, Message $message, IKeeper $keeper)
+    public function __construct(User $user, Message $message, State $state)
     {
         $this->user = $user;
         $this->message = $message;
-        $state = $keeper->fill($user->telegram_id, new State());
-        $action = $this->action($state);
-        if($action->getState() === array_pop($this->states)) {
-            $keeper->remove($user->telegram_id);
-            return true;
+        $this->state = $state;
+    }
+
+    public function start()
+    {
+        $action = $this->action($this->state);
+
+        if ($action->getState() === array_pop($this->flows)) {
+            $this->state->setState($this->flows[0]);
+            return $this->state;
         }
-        $keeper->save($user->telegram_id, $action);
+
+        return $this->state;
     }
 
     public function action(State $state)
     {
-        $userId = $this->user->telegram_id;
-        $current = empty($state->getState()) ? $this->states[0] : $state->getState();
+        $messenger = SendMessage::getInstance();
+
+        $current = empty($state->getState()) ? $this->flows[0] : $state->getState();
 
         /** @var AbstractAnswer $currentState */
         $currentState = new $current($state);
 
         $validation = $currentState->validation($this->message);
 
-        if(true !== $validation) {
-            $this->send($currentState->sendError($validation, $userId));
-            $this->send($currentState->answer($userId));
-            return false;
+        if (true !== $validation) {
+            $messenger->addMessage($currentState->sendError($validation));
+            $messenger->addMessage($currentState->answer());
+            return $state;
         }
-        $next = $this->states[array_search($current, $this->states) + 1];
+        $state = $currentState->setParam($state, $this->message->text);
+
+        $next = $this->flows[array_search($state->getState(), $this->flows) + 1];
 
         $state->setState($next);
-        $state = $currentState->setParam($state, $this->message->message);
+
 
         /** @var AbstractAnswer $nextState */
         $nextState = new $next($state);
-        $this->send($nextState->answer($userId));
+        $messenger->addMessage($nextState->answer());
 
         return $state;
     }
 
-    public function send($message)
-    {
-        $message['reply_to_message_id'] = $this->message->message_id;
-        $a = Telegram::bot()->sendMessage($message);
-    }
 }

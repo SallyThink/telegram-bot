@@ -5,7 +5,7 @@ namespace App\Parser;
 use App\Exceptions\ParserException;
 use Carbon\Carbon;
 
-class Minsktrans
+class Main
 {
     protected $url = 'http://www.minsktrans.by/pda/index.php';
 
@@ -19,7 +19,7 @@ class Minsktrans
 
     protected $patternForAnotherWay = "/(.*)Другие направления/u";
     protected $patternForFinalStop = "/<br><br><b>([а-яА-Я0-9 -№]*)<\/b>/u";
-    protected $patternForAllStop = '/<a href=\'([a-zA-Z0-9=?&%№]*)\'>([а-яА-Я0-9 -\.]+)<\/a>/u';
+    protected $patternForAllStop = '/<a href=\'([a-zA-Z0-9=?&%№]*)\'>([а-яА-Я0-9 -\.=?&%№]+)<\/a>/u';
 
     protected $allStops = [];
     protected $finalStops = [];
@@ -49,7 +49,7 @@ class Minsktrans
             'Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
             'Accept-Language:ru-RU,ru;q=0.8,en-US;q=0.6,en;q=0.4',
         ];
-/*        $ch = curl_init();
+        $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3013.3 Safari/537.36");
@@ -60,10 +60,9 @@ class Minsktrans
         curl_setopt($ch, CURLOPT_COOKIEFILE, "");
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
         $result = curl_exec($ch);
-        curl_close($ch);*/
-$result = file_get_contents($url);
-
-        if(false === $result || false === $this->isValid($result)) {
+        curl_close($ch);
+        
+        if (false === $result || false === $this->isValid($result)) {
             throw new ParserException();
         }
 
@@ -75,7 +74,7 @@ $result = file_get_contents($url);
      */
     protected function checkForAnotherWays()
     {
-         if(preg_match($this->patternForAnotherWay, $this->body, $body)) {
+         if (preg_match($this->patternForAnotherWay, $this->body, $body)) {
              $this->body = $body[1];
          }
     }
@@ -103,7 +102,7 @@ $result = file_get_contents($url);
      */
     protected function parseRoutes()
     {
-        $patternForRoute = '/' . $this->finalStops[0] . '(.*)' . $this->finalStops[1] . '(.*)/u';
+        $patternForRoute = '@' . $this->finalStops[0] . '(.*)' . $this->finalStops[1] . '(.*)@u';
 
         preg_match_all($patternForRoute, $this->body, $result);
 
@@ -152,12 +151,12 @@ $result = file_get_contents($url);
         $url = $this->url . $this->allStops[1][array_search($stop, $this->allStops[2])];
         $body = $this->curl($url);
 
-        preg_match_all('/<b>([0-9]*)<\/b> :?  ([0-9 ]*)/', str_replace(['<u>', '</u>'], '', $body), $m);
+        preg_match_all('@<b>([0-9]*)<\/b> :?  ([0-9 ]*)@', str_replace(['<u>', '</u>'], '', $body), $m);
 
         for($i=0; $i<count($m[0]); ++$i)
         {
             $hour = $m[1][$i];
-            if(0 == substr($hour, 0, 1)) {
+            if (0 == substr($hour, 0, 1)) {
                 $hour = substr($hour, 1, 1);
             }
             $this->time[$hour] = $m[2][$i];

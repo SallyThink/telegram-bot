@@ -2,14 +2,13 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Time extends Model
+class Time extends \Eloquent
 {
     protected $fillable = ['type', 'number', 'route', 'stop', 'time'];
     protected $casts = ['time' => 'json'];
 
-    public function checkTime($vars)
+    public function getTime($vars)
     {
         return $this->where($vars)->get()->first();
     }

@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Parser;
 
-use App\Parser\Minsktrans;
+use App\Parser\Main;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class ParserTest extends TestCase
 {
-    /** @var Minsktrans $parser */
+    /** @var Main $parser */
     protected $parser;
 
     protected $type = 'Autobus';
@@ -21,7 +21,7 @@ class ParserTest extends TestCase
     {
         parent::setUp();
 
-        $this->parser = new Minsktrans($this->type, $this->number);
+        $this->parser = new Main($this->type, $this->number);
     }
 
     public function test_getFinalStops()

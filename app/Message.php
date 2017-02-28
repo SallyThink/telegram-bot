@@ -4,7 +4,7 @@ namespace App;
 
 class Message extends \Eloquent
 {
-    protected $fillable = ['telegram_id', 'message_id', 'message'];
+    protected $fillable = ['chat_id', 'message_id', 'text'];
 
 
     /**
@@ -15,9 +15,9 @@ class Message extends \Eloquent
     {
         return $this->create(
             [
-                'telegram_id' => $message->getFrom()->getId(),
+                'chat_id' => $message->getFrom()->getId(),
                 'message_id' => $message->getMessageId(),
-                'message' => $message->getText()
+                'text' => $message->getText()
             ]
         );
     }

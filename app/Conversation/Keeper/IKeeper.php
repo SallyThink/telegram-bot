@@ -8,15 +8,19 @@ interface IKeeper
 {
     /**
      * @param int $id
-     * @param State $state
      * @return State
      */
-    public function fill(int $id, State $state);
+    public function fill(int $id);
     /**
      * @param int $id
      * @param State $state
      */
     public function save(int $id, State $state);
+
+    /**
+     * @param int $id
+     */
     public function remove(int $id);
+
 
 }

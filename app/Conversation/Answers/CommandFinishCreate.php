@@ -3,16 +3,23 @@
 namespace App\Conversation\Answers;
 
 use App\Entity\State;
-use App\Message;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class Number extends AbstractAnswer
+class CommandFinishCreate extends AbstractAnswer
 {
+    protected $validation;
+    protected $state;
+
+    public function __construct(State $state = null)
+    {
+        $this->state = $state;
+    }
 
     public function answer()
     {
         $return = [
-            'text' => 'Введите номер',
+            'parse_mode' => 'HTML',
+            'text' => 'Command successful created! Use <a>' . $this->state->getCommand() . '</a>',
             'reply_markup' => Keyboard::hide()
         ];
 
@@ -26,14 +33,12 @@ class Number extends AbstractAnswer
      */
     public function setParam(State $state, $val)
     {
-        $state->setNumber($val);
-
         return $state;
     }
 
 
     protected function getRules()
     {
-        return ['number' => 'required|integer'];
+        return ['finish' => 'required'];
     }
 }

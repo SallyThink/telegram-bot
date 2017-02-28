@@ -12,7 +12,7 @@ class Route extends \Eloquent
      * @param array $vars
      * @return \Eloquent|null
      */
-    public function checkRoute(array $vars)
+    public function getRoute(array $vars)
     {
         return $this->where($vars)->get()->first();
     }

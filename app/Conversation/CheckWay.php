@@ -3,7 +3,7 @@
 namespace App\Conversation;
 
 use App\Entity\State;
-use App\Parser\Minsktrans;
+use App\Parser\Main;
 use App\Route;
 use App\Stop;
 use App\Time;
@@ -22,11 +22,11 @@ class CheckWay
             'number' => $state->getNumber(),
         ];
 
-        $route = (new Route())->checkRoute($vars);
+        $route = (new Route())->getRoute($vars);
 
-        if(null === $route) {
-            $minsktrans = new Minsktrans($vars['type'], $vars['number']);
-            $routes = $minsktrans->getFinalStops();
+        if (null === $route) {
+            $parser = new Main($vars['type'], $vars['number']);
+            $routes = $parser->getFinalStops();
 
             $vars['routes'] = $routes;
             $route = Route::create($vars);
@@ -47,11 +47,11 @@ class CheckWay
             'route' => $state->getRoute(),
         ];
 
-        $stop = (new Stop())->checkStop($vars);
+        $stop = (new Stop())->getStop($vars);
 
-        if(null === $stop) {
-            $minsktrans = new Minsktrans($vars['type'], $vars['number']);
-            $stops = $minsktrans->getAllStops($vars['route']);
+        if (null === $stop) {
+            $parser = new Main($vars['type'], $vars['number']);
+            $stops = $parser->getAllStops($vars['route']);
 
             $vars['stops'] = $stops;
             $stop = Stop::create($vars);
@@ -73,11 +73,11 @@ class CheckWay
             'stop' => $state->getStop()
         ];
 
-        $time = (new Time)->checkTime($vars);
+        $time = (new Time)->getTime($vars);
 
-        if(null === $time) {
-            $minsktrans = new Minsktrans($vars['type'], $vars['number']);
-            $time = $minsktrans->getTime($vars['route'], $vars['stop']);
+        if (null === $time) {
+            $parser = new Main($vars['type'], $vars['number']);
+            $time = $parser->getTime($vars['route'], $vars['stop']);
 
             $vars['time'] = $time;
             $time = Time::create($vars);

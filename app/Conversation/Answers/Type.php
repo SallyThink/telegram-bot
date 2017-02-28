@@ -8,10 +8,9 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class Type extends AbstractAnswer
 {
-    public function answer($userId)
+    public function answer()
     {
       $return = [
-          'chat_id' => $userId,
           'text' => 'Check',
           'reply_markup' => Keyboard::make([
               'keyboard' => [

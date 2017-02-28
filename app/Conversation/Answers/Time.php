@@ -5,7 +5,7 @@ namespace App\Conversation\Answers;
 use App\Conversation\CheckWay;
 use App\Entity\State;
 use App\Message;
-use App\Parser\Minsktrans;
+use App\Parser\Main;
 use Carbon\Carbon;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -20,20 +20,30 @@ class Time extends AbstractAnswer
         $now = Carbon::now('Europe/Minsk');
         $hour = $now->hour;
 
-        $this->time = $hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
-        if($now->minute > 30)
-        {
-            $this->time .= PHP_EOL . ++$hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
+        if (isset($allTime[$hour])) {
+            $this->time = $hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
+            if ($now->minute > 30 && isset($allTime[++$hour]))
+            {
+                $this->time .= PHP_EOL . $hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
+            }
+        } else {
+            $this->time = 'no time';
         }
     }
 
-    public function answer($userId)
+    public function answer()
     {
         $return = [
-            'chat_id' => $userId,
             'parse_mode' => 'HTML',
             'text' => '<pre>' . $this->time . '</pre>',
-            'reply_markup' => Keyboard::hide()
+            'reply_markup' => Keyboard::make([
+                'keyboard' => [
+                    ['Автобус'],
+                    ['Троллейбус', 'Трамвай']
+                ],
+                'resize_keyboard' => false,
+                'one_time_keyboard' => false,
+            ])
         ];
 
         return $return;

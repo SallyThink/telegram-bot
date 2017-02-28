@@ -22,7 +22,7 @@ class CheckWayTest extends TestCase
 
     public function test_getRoutes()
     {
-        $model = (new Route())->checkRoute([
+        $model = (new Route())->getRoute([
             'type' => $this->type,
             'number' => $this->number,
         ]);
@@ -44,7 +44,7 @@ class CheckWayTest extends TestCase
 
     public function test_getStops()
     {
-        $model = (new Stop())->checkStop([
+        $model = (new Stop())->getStop([
             'type' => $this->type,
             'number' => $this->number,
             'route' => $this->route
@@ -68,7 +68,7 @@ class CheckWayTest extends TestCase
 
     public function test_getTime()
     {
-        $model = (new Time())->checkTime([
+        $model = (new Time())->getTime([
             'type' => $this->type,
             'number' => $this->number,
             'route' => $this->route,

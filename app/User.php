@@ -6,7 +6,7 @@ namespace App;
 class User extends \Eloquent
 {
     protected $fillable = [
-        'telegram_id', 'first_name', 'last_name', 'username',
+        'chat_id', 'first_name', 'last_name', 'username',
     ];
 
 
@@ -17,12 +17,12 @@ class User extends \Eloquent
     public function store(\Telegram\Bot\Objects\User $user)
     {
         $values = [
-            'telegram_id' => $user->getId(),
+            'chat_id' => $user->getId(),
             'first_name' => $user->getFirstName(),
             'last_name' => $user->getLastName(),
             'username' => $user->getUsername(),
         ];
 
-        return $this->firstOrCreate(['telegram_id' => $values['telegram_id']], $values);
+        return $this->firstOrCreate(['chat_id' => $values['chat_id']], $values);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Parser;
 
-class FinalStops extends Minsktrans
+class FinalStops extends Main
 {
 
 

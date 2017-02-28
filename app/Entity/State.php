@@ -5,9 +5,13 @@ namespace App\Entity;
 class State
 {
     /**
+     * @var int
+     */
+    protected $userId;
+    /**
      * @var string
      */
-    protected $context;
+    protected $command;
     /**
      * @var string
      */
@@ -34,20 +38,35 @@ class State
     protected $time;
 
     /**
-     * @param string $context
+     * @return int
+     */
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId(int $userId)
+    {
+        $this->userId = (int)$userId;
+    }
+    /**
+     * @param string $command
      * @return State
      */
-    public function setContext($context)
+    public function setCommand($command)
     {
-        $this->context = $context;
+        $this->command = $command;
         return $this;
     }
     /**
      * @return string
      */
-    public function getContext()
+    public function getCommand()
     {
-        return $this->context;
+        return $this->command;
     }
     /**
      * @param string $state
@@ -71,7 +90,7 @@ class State
      */
     public function setType($type)
     {
-        $this->type = $type;
+        $this->type = (string)$type;
         return $this;
     }
     /**

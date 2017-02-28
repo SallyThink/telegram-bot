@@ -19,9 +19,12 @@ class Redis implements IKeeper
      * @param State $state
      * @return State
      */
-    public function fill(int $id, State $state)
+    public function fill(int $id)
     {
-        $state->setContext($this->redis->hGet($id, 'context'));
+        $state = new State();
+
+        $state->setUserId($id);
+        $state->setCommand($this->redis->hGet($id, 'command'));
         $state->setState($this->redis->hGet($id, 'state'));
         $state->setType($this->redis->hGet($id, 'type'));
         $state->setNumber($this->redis->hGet($id, 'number'));
@@ -38,7 +41,7 @@ class Redis implements IKeeper
      */
     public function save(int $id, State $state)
     {
-        $this->redis->hSet($id, 'context', $state->getContext());
+        $this->redis->hSet($id, 'command', $state->getCommand());
         $this->redis->hSet($id, 'state', $state->getState());
         $this->redis->hSet($id, 'type', $this->translate($state->getType()));
         $this->redis->hSet($id, 'number', $state->getNumber());
@@ -67,12 +70,7 @@ class Redis implements IKeeper
         $this->redis->del($id);
     }
 
-    public function setParam($id, $param, $val)
-    {
-        $this->redis->hSet($id, $param, $val);
-    }
-
-    public function expire($id)
+    protected function expire($id)
     {
         $this->redis->expire($id, 180);
     }

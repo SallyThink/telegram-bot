@@ -2,32 +2,20 @@
 
 namespace App\Conversation\Answers;
 
-use App\Conversation\CheckWay;
 use App\Entity\State;
-use App\Exceptions\ParserException;
-use App\Message;
-use App\Parser\FinalStops;
-use App\Parser\Main;
-use Illuminate\Validation\Rule;
 use Telegram\Bot\Keyboard\Keyboard;
 
-class Route extends AbstractAnswer
+class ContinueCreate extends AbstractAnswer
 {
-    protected $finalStops;
-
-    public function __construct(State $state)
-    {
-        $this->finalStops = CheckWay::getRoutes($state);
-    }
 
     public function answer()
     {
         $return = [
-            'text' => 'Check Route',
+            'text' => 'want more?',
             'reply_markup' => Keyboard::make([
                 'keyboard' => [
-                    [$this->finalStops[0]],
-                    [$this->finalStops[1]],
+                    ['Yes'],
+                    ['No']
                 ],
                 'resize_keyboard' => false,
                 'one_time_keyboard' => false,
@@ -44,13 +32,16 @@ class Route extends AbstractAnswer
      */
     public function setParam(State $state, $val)
     {
-        $state->setRoute($val);
+        if ('Yes' == $val){
+            $state->setState(CommandName::class);
+        }
 
         return $state;
     }
 
+
     protected function getRules()
     {
-        return ['route' => ['required', Rule::in($this->finalStops)]];
+        return ['continue' => 'required|in:Yes,No'];
     }
 }

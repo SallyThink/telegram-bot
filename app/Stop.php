@@ -14,7 +14,7 @@ class Stop extends Model
      * @param array $vars
      * @return \Eloquent|null
      */
-    public function checkStop($vars)
+    public function getStop($vars)
     {
         return $this->where($vars)->get()->first();
     }

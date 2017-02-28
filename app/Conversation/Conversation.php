@@ -8,6 +8,7 @@ use App\Conversation\Answers\Route;
 use App\Conversation\Answers\Stop;
 use App\Conversation\Answers\Time;
 use App\Conversation\Commands\Command;
+use App\Conversation\Commands\General;
 use App\Conversation\Keeper\IKeeper;
 use App\Conversation\Answers\Type;
 use App\Entity\State;
@@ -35,15 +36,23 @@ class Conversation
 
     public function start()
     {
-        $state = $this->keeper->fill($this->user->telegram_id, new State());
-        if('/' === substr($this->message->message, 0, 1)) {
-            $answer = new Command();
-            return true;
-        }
-        $answer = new Schedule();
+        $state = $this->keeper->fill($this->user->chat_id);
 
-        $answer->handle($this->user, $this->message, $this->keeper);
-        return true;
+        if ('/' === substr($this->message->text, 0, 1) || null != $state->getCommand()) {
+
+            $general = new General();
+            $state = $general->run($this->user, $this->message, $state);
+
+        } else {
+
+            $answer = new Schedule($this->user, $this->message, $state);
+            $state = $answer->start();
+
+        }
+
+        $this->keeper->save($this->user->chat_id, $state);
+
+        SendMessage::getInstance()->sendMessage($this->user->chat_id, $this->message->text);
     }
 
 
