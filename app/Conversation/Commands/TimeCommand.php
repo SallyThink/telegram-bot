@@ -8,19 +8,8 @@ use App\Message;
 use App\User;
 use Carbon\Carbon;
 
-class TimeCommand implements ICommand
+class TimeCommand extends AbstractCommand implements ICommand
 {
-    protected $user;
-    protected $message;
-    protected $state;
-
-    public function __construct(User $user, Message $message, State $state)
-    {
-        $this->user = $user;
-        $this->message = $message;
-        $this->state = $state;
-    }
-
     public function handle()
     {
         $time = Carbon::now('Europe/Minsk');

@@ -14,10 +14,6 @@ class General
           TimeCommand::class => '/gettime',
         ];
 
-    public function __construct()
-    {
-    }
-
     public function run(User $user, Message $message, State $state)
     {
         if ($state->getCommand() != '') {

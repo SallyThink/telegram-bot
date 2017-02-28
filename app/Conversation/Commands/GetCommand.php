@@ -11,18 +11,8 @@ use App\Message;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
-class GetCommand implements ICommand
+class GetCommand extends AbstractCommand implements ICommand
 {
-    protected $state;
-    protected $user;
-    protected $message;
-
-    public function __construct(User $user, Message $message, State $state)
-    {
-        $this->user = $user;
-        $this->message = $message;
-        $this->state = $state;
-    }
 
     public function handle()
     {
