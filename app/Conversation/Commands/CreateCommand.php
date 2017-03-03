@@ -14,11 +14,11 @@ use App\Conversation\Answers\Type;
 use App\Conversation\Schedule;
 use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Message;
+use App\User;
 
 class CreateCommand extends Schedule implements ICommand
 {
-
-
     protected $triggers = [
         '/create',
         '/endcreate'
@@ -34,6 +34,13 @@ class CreateCommand extends Schedule implements ICommand
         ContinueCreate::class,
         CommandFinishCreate::class,
     ];
+
+    public function __construct(User $user, Message $message, State $state)
+    {
+        SendMessage::getInstance()->addEmoji("\u{1F195}");
+
+        parent::__construct($user, $message, $state);
+    }
 
     public function creating()
     {
@@ -85,7 +92,7 @@ class CreateCommand extends Schedule implements ICommand
         $model->save();
     }
 
-    public function handle()
+    public function handle() : State
     {
         SendMessage::getInstance()->addMessage((new CommandName(new State()))->answer());
         $this->state->setCommand('create');

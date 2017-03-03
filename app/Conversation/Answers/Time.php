@@ -3,10 +3,8 @@
 namespace App\Conversation\Answers;
 
 use App\Conversation\CheckWay;
+use App\Conversation\Helpers\TimeHelper;
 use App\Entity\State;
-use App\Message;
-use App\Parser\Main;
-use Carbon\Carbon;
 use Telegram\Bot\Keyboard\Keyboard;
 
 class Time extends AbstractAnswer
@@ -17,21 +15,12 @@ class Time extends AbstractAnswer
     {
         $allTime = CheckWay::getTime($state);
 
-        $now = Carbon::now('Europe/Minsk');
-        $hour = $now->hour;
+        $helper = new TimeHelper();
 
-        if (isset($allTime[$hour])) {
-            $this->time = $hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
-            if ($now->minute > 30 && isset($allTime[++$hour]))
-            {
-                $this->time .= PHP_EOL . $hour . ':' . str_replace(' ', ' ' . $hour . ':', $allTime[$hour]);
-            }
-        } else {
-            $this->time = 'no time';
-        }
+        $this->time = implode(PHP_EOL, $helper->getNextTime($allTime));
     }
 
-    public function answer()
+    public function answer() : array
     {
         $return = [
             'parse_mode' => 'HTML',
@@ -54,7 +43,7 @@ class Time extends AbstractAnswer
      * @param $val
      * @return State
      */
-    public function setParam(State $state, $val)
+    public function setParam(State $state, $val) : State
     {
         $state->setTime($val);
 

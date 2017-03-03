@@ -8,7 +8,16 @@ use App\User;
 
 interface ICommand
 {
+    /**
+     * ICommand constructor.
+     * @param User $user
+     * @param Message $message
+     * @param State $state
+     */
     public function __construct(User $user, Message $message, State $state);
 
-    public function handle();
+    /**
+     * @return State
+     */
+    public function handle() : State;
 }

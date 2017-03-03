@@ -2,20 +2,18 @@
 
 namespace App\Conversation\Commands;
 
+use App\Conversation\Helpers\TimeHelper;
 use App\Conversation\SendMessage;
 use App\Entity\State;
-use App\Message;
-use App\User;
-use Carbon\Carbon;
 
 class TimeCommand extends AbstractCommand implements ICommand
 {
-    public function handle()
+    public function handle() : State
     {
-        $time = Carbon::now('Europe/Minsk');
+        $helper = new TimeHelper();
 
         SendMessage::getInstance()->addMessage([
-            'text' => $time->toDateString() .' '. $time->toTimeString()
+            'text' => $helper->getTime()
         ]);
 
         return $this->state;

@@ -43,7 +43,7 @@ class Redis implements IKeeper
     {
         $this->redis->hSet($id, 'command', $state->getCommand());
         $this->redis->hSet($id, 'state', $state->getState());
-        $this->redis->hSet($id, 'type', $this->translate($state->getType()));
+        $this->redis->hSet($id, 'type', $state->getType());
         $this->redis->hSet($id, 'number', $state->getNumber());
         $this->redis->hSet($id, 'route', $state->getRoute());
         $this->redis->hSet($id, 'stop', $state->getStop());
@@ -52,18 +52,6 @@ class Redis implements IKeeper
         $this->redis->expire($id, 180);
     }
 
-    protected function translate(string $type)
-    {
-        switch($type) {
-            case 'Автобус':
-                return 'Autobus';
-            case 'Троллейбус':
-                return 'Trolleybus';
-            case 'Трамвай':
-                return 'Tramway';
-        }
-        return $type;
-    }
 
     public function remove(int $id)
     {

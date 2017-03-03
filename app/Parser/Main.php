@@ -19,7 +19,7 @@ class Main
 
     protected $patternForAnotherWay = "/(.*)Другие направления/u";
     protected $patternForFinalStop = "/<br><br><b>([а-яА-Я0-9 -№]*)<\/b>/u";
-    protected $patternForAllStop = '/<a href=\'([a-zA-Z0-9=?&%№]*)\'>([а-яА-Я0-9 -\.=?&%№]+)<\/a>/u';
+    protected $patternForAllStop = '/<a href=\'([a-zA-Z0-9=?&%№]*)\'>([а-яА-Я0-9 -\.=?&%№"\']+)<\/a>/u';
 
     protected $allStops = [];
     protected $finalStops = [];
@@ -160,7 +160,12 @@ $result = file_get_contents($url);
             if (0 == substr($hour, 0, 1)) {
                 $hour = substr($hour, 1, 1);
             }
-            $this->time[$hour] = $m[2][$i];
+
+            $minutes = explode(' ', $m[2][$i]);
+
+            foreach ($minutes as $minute) {
+                $this->time[] = (int)Carbon::createFromTime($hour, $minute, null, 'Europe/Minsk')->timestamp % 86400;
+            }
         }
     }
 

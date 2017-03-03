@@ -13,6 +13,7 @@ class General
           CreateCommand::class => '/create',
           TimeCommand::class => '/gettime',
           ListCommand::class => '/commands',
+          StartCommand::class => '/start',
         ];
 
     public function run(User $user, Message $message, State $state)

@@ -19,6 +19,7 @@ class CreateTimesTable extends Migration
             $table->integer('number');
             $table->string('route');
             $table->string('stop');
+            $table->boolean('isWeekend');
             $table->json('time');
             $table->timestamps();
         });

@@ -52,7 +52,7 @@ class Conversation
 
         $this->keeper->save($this->user->chat_id, $state);
 
-        SendMessage::getInstance()->sendMessage($this->user->chat_id, $this->message->text);
+        SendMessage::getInstance()->sendMessage($this->user->chat_id, $this->message);
     }
 
 

@@ -38,14 +38,14 @@ class Schedule
 
     public function start()
     {
-        $action = $this->action($this->state);
+        $state = $this->action($this->state);
 
-        if ($action->getState() === array_pop($this->flows)) {
+        if ($state->getState() === array_pop($this->flows)) {
             $this->state->setState($this->flows[0]);
             return $this->state;
         }
 
-        return $this->state;
+        return $state;
     }
 
     public function action(State $state)
@@ -73,9 +73,27 @@ class Schedule
 
         /** @var AbstractAnswer $nextState */
         $nextState = new $next($state);
+        $this->emoji($state);
         $messenger->addMessage($nextState->answer());
 
         return $state;
+    }
+
+    protected function emoji(State $state)
+    {
+        $messenger = SendMessage::getInstance();
+        switch ($state->getType()) {
+            case ('Autobus'):
+                $messenger->addEmoji("\u{1F68D}");
+            break;
+            case ('Trolleybus'):
+                $messenger->addEmoji("\u{1F68E}");
+                break;
+            case ('Tramway'):
+                $messenger->addEmoji("\u{1F68A}");
+                break;
+        }
+
     }
 
 }

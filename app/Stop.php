@@ -2,9 +2,8 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 
-class Stop extends Model
+class Stop extends \Eloquent
 {
     protected $fillable = ['type', 'number', 'route', 'stops'];
 

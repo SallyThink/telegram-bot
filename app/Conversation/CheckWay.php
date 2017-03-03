@@ -7,6 +7,7 @@ use App\Parser\Main;
 use App\Route;
 use App\Stop;
 use App\Time;
+use Carbon\Carbon;
 
 class CheckWay
 {
@@ -70,7 +71,8 @@ class CheckWay
             'type' => $state->getType(),
             'number' => $state->getNumber(),
             'route' => $state->getRoute(),
-            'stop' => $state->getStop()
+            'stop' => $state->getStop(),
+            'isWeekend' => Carbon::now('Europe/Minsk')->isWeekend()
         ];
 
         $time = (new Time)->getTime($vars);

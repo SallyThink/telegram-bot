@@ -32,9 +32,22 @@ class Type extends AbstractAnswer
      */
     public function setParam(State $state, $val)
     {
-        $state->setType($val);
+        $state->setType($this->translate($val));
 
         return $state;
+    }
+
+    protected function translate(string $type)
+    {
+        switch($type) {
+            case 'Автобус':
+                return 'Autobus';
+            case 'Троллейбус':
+                return 'Trolleybus';
+            case 'Трамвай':
+                return 'Tramway';
+        }
+        return $type;
     }
 
     protected function getRules()
