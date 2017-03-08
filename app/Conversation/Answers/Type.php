@@ -10,19 +10,11 @@ class Type extends AbstractAnswer
 {
     public function answer()
     {
-      $return = [
-          'text' => 'Check',
-          'reply_markup' => Keyboard::make([
-              'keyboard' => [
-                  ['Автобус'],
-                  ['Троллейбус', 'Трамвай']
-              ],
-              'resize_keyboard' => false,
-              'one_time_keyboard' => false,
-          ])
-      ];
+        $return = ['text' => 'Check', 'reply_markup' => Keyboard::make()
+            ->row(Keyboard::button(['text'=>'Автобус']))
+            ->row(Keyboard::button(['text'=>'Троллейбус']), Keyboard::button(['text'=>'Трамвай']))];
 
-      return $return;
+        return $return;
     }
 
     /**

@@ -3,26 +3,29 @@
 namespace App\Conversation\Commands;
 
 use App\Command;
-use App\Conversation\Answers\CommandFinishCreate;
-use App\Conversation\Answers\CommandName;
-use App\Conversation\Answers\CommandTime;
-use App\Conversation\Answers\ContinueCreate;
+use App\Conversation\Answers\Command\CommandFinishCreate;
+use App\Conversation\Answers\Command\CommandName;
+use App\Conversation\Answers\Command\CommandTime;
+use App\Conversation\Answers\Command\ContinueCreate;
 use App\Conversation\Answers\Number;
 use App\Conversation\Answers\Stop;
 use App\Conversation\Answers\Route;
 use App\Conversation\Answers\Type;
+use App\Conversation\Helpers\Emoji;
 use App\Conversation\Schedule;
 use App\Conversation\SendMessage;
 use App\Entity\State;
 use App\Message;
 use App\User;
 
-class CreateCommand extends Schedule implements ICommand
+class CreateCommand extends AbstractCommand implements ICommand
 {
     protected $triggers = [
         '/create',
-        '/endcreate'
+        '/new',
     ];
+
+    protected $command = '/create';
 
     protected $flows = [
         CommandName::class,
@@ -37,46 +40,49 @@ class CreateCommand extends Schedule implements ICommand
 
     public function __construct(User $user, Message $message, State $state)
     {
-        SendMessage::getInstance()->addEmoji("\u{1F195}");
+        if ('' != $state->getCommand()) {
+            $this->command = $state->getCommand();
+        }
 
         parent::__construct($user, $message, $state);
     }
 
-    public function creating()
+    public function start() : State
     {
-        $state = $this->state;
+        $this->addNewEmoji();
+        $schedule = new Schedule();
 
-        $state = $this->action($state);
-
-        if ($state->getCommand() === 'create') {
-            $this->addCommand($state) ? $state->setCommand($this->message->text) : $state->setState(Type::class);
-        }
+        $state = $schedule->action($this->flows, $this->message, $this->state);
 
         if ($state->getState() === ContinueCreate::class) {
+            $this->addCommand($state);
             $this->addData($state);
-        }
-
-        if ($state->getState() === CommandFinishCreate::class) {
+        } elseif ($state->getState() === CommandFinishCreate::class) {
             $state->setCommand(null);
+            $state->setState('');
         }
 
         return $state;
-
     }
 
+
+    /**
+     * @param State $state
+     */
     protected function addCommand(State $state)
     {
         $model = new Command();
-        if (null === $model->getCommand($this->user->chat_id, $this->message->text)) {
-            $model->chat_id = $this->user->chat_id;
-            $model->command = $this->message->text;
-            $model->save();
-            return true;
-        }
 
-        return false;
+        if (null === $model->getCommand($this->user->chat_id, $state->getCommand())) {
+            $model->chat_id = $this->user->chat_id;
+            $model->command = $state->getCommand();
+            $model->save();
+         }
     }
 
+    /**
+     * @param State $state
+     */
     protected function addData(State $state)
     {
         $model = (new Command())->getCommand($this->user->chat_id, $state->getCommand());
@@ -92,12 +98,22 @@ class CreateCommand extends Schedule implements ICommand
         $model->save();
     }
 
+    /**
+     * @return State
+     */
     public function handle() : State
     {
+        $this->addNewEmoji();
         SendMessage::getInstance()->addMessage((new CommandName(new State()))->answer());
-        $this->state->setCommand('create');
+        $this->state->setCommand('/create');
         $this->state->setState(CommandName::class);
 
         return $this->state;
+    }
+
+    protected function addNewEmoji()
+    {
+        $emoji = new Emoji();
+        $emoji->createCommand();
     }
 }

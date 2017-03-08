@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Conversation\Answers;
+namespace App\Conversation\Answers\Command;
 
+use App\Conversation\Answers\Time;
 use App\Conversation\Helpers\TimeHelper;
 use App\Entity\State;
 

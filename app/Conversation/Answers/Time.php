@@ -23,7 +23,6 @@ class Time extends AbstractAnswer
     public function answer() : array
     {
         $return = [
-            'parse_mode' => 'HTML',
             'text' => '<pre>' . $this->time . '</pre>',
             'reply_markup' => Keyboard::make([
                 'keyboard' => [

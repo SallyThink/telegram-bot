@@ -8,6 +8,12 @@ use App\Entity\State;
 
 class TimeCommand extends AbstractCommand implements ICommand
 {
+    protected $triggers = [
+        '/time',
+        '/gettime',
+        '/now',
+    ];
+
     public function handle() : State
     {
         $helper = new TimeHelper();

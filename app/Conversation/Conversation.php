@@ -28,7 +28,6 @@ class Conversation
 
     public function __construct(User $user, Message $message, IKeeper $keeper)
     {
-
         $this->user = $user;
         $this->message = $message;
         $this->keeper = $keeper;
@@ -45,13 +44,13 @@ class Conversation
 
         } else {
 
-            $answer = new Schedule($this->user, $this->message, $state);
-            $state = $answer->start();
+            $answer = new Schedule();
+            $state = $answer->start($this->user, $this->message, $state);
 
         }
 
         $this->keeper->save($this->user->chat_id, $state);
-
+        
         SendMessage::getInstance()->sendMessage($this->user->chat_id, $this->message);
     }
 

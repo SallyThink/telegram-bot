@@ -3,18 +3,12 @@
 namespace App\Conversation\Commands;
 
 use App\Command;
-use App\Conversation\Answers\GetCommandTime;
-use App\Conversation\Answers\PossibleCommand;
-use App\Conversation\Answers\Time;
+use App\Conversation\Answers\Command\GetCommandTime;
+use App\Conversation\Answers\Command\PossibleCommand;
 use App\Conversation\CheckWay;
 use App\Conversation\Helpers\StopHelper;
-use App\Conversation\Helpers\TimeHelper;
 use App\Conversation\SendMessage;
 use App\Entity\State;
-use App\Exceptions\ParserException;
-use App\Message;
-use App\User;
-use Illuminate\Database\Eloquent\Model;
 
 class GetCommand extends AbstractCommand implements ICommand
 {
@@ -81,9 +75,9 @@ class GetCommand extends AbstractCommand implements ICommand
                 $result[] = $v;
         }
 
-        $answer = new PossibleCommand();
+        $answer = new PossibleCommand($result);
 
-        SendMessage::getInstance()->addMessage($answer->answer($result));
+        SendMessage::getInstance()->addMessage($answer->answer());
 
         return $this->state;
     }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Conversation\Answers;
+namespace App\Conversation\Answers\Command;
 
+use App\Conversation\Answers\AbstractAnswer;
 use App\Entity\State;
 use Telegram\Bot\Keyboard\Keyboard;
 

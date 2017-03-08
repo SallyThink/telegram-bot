@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Conversation\Answers;
+namespace App\Conversation\Answers\Command;
 
 use App\Command;
+use App\Conversation\Answers\AbstractAnswer;
 use App\Conversation\Commands\General;
 use App\Entity\State;
 use Illuminate\Database\Eloquent\Model;
@@ -34,28 +35,27 @@ class CommandName extends AbstractAnswer
      */
     public function setParam(State $state, $val)
     {
+        $state = $state->setCommand($val);
+
         return $state;
     }
 
 
     protected function getRules()
     {
-        $commands = [];
+        $rules = [];
+
         $commandNames = Command::where('chat_id', $this->state->getUserId())->get(['command']);
         foreach($commandNames as $name)
         {
-            $commands[] = $name->command;
+            $rules[] = $name->command;
         }
-
-        $rules = implode(',', $commands);
 
         $triggers = (new General())->getTriggers();
-
         foreach ($triggers as $trigger) {
-            $rules .= $trigger;
+            $rules[] = $trigger;
         }
 
-
-        return ['command_name' => 'required|regex:/^\/.+$/|not_in:' . substr($rules, 0, -1)];
+        return ['command_name' => 'required|regex:/^\/.+$/|not_in:' . implode(',', $rules)];
     }
 }

@@ -8,6 +8,11 @@ use App\Entity\State;
 
 class StartCommand extends AbstractCommand implements ICommand
 {
+    protected $triggers = [
+        '/start',
+        '/hello',
+    ];
+
     public function handle() : State
     {
         $text = '';

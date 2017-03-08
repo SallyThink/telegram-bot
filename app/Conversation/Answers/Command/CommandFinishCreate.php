@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Conversation\Answers;
+namespace App\Conversation\Answers\Command;
 
+use App\Conversation\Answers\AbstractAnswer;
 use App\Entity\State;
 use Telegram\Bot\Keyboard\Keyboard;
 
@@ -18,8 +19,7 @@ class CommandFinishCreate extends AbstractAnswer
     public function answer()
     {
         $return = [
-            'parse_mode' => 'HTML',
-            'text' => 'Command successful created! Use <a>' . $this->state->getCommand() . '</a>',
+            'text' => 'Command successful created! Use ' . $this->state->getCommand(),
             'reply_markup' => Keyboard::hide()
         ];
 
