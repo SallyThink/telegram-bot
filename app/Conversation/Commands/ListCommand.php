@@ -15,6 +15,7 @@ class ListCommand extends AbstractCommand implements ICommand
         '/customcommands',
         '/my',
     ];
+
     public function handle() : State
     {
         $messenger = SendMessage::getInstance();

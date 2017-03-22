@@ -16,7 +16,6 @@ class Redis implements IKeeper
 
     /**
      * @param int $id
-     * @param State $state
      * @return State
      */
     public function fill(int $id)
@@ -24,6 +23,7 @@ class Redis implements IKeeper
         $state = new State();
 
         $state->setUserId($id);
+        $state->setUserCommand($this->redis->hGet($id, 'userCommand'));
         $state->setCommand($this->redis->hGet($id, 'command'));
         $state->setState($this->redis->hGet($id, 'state'));
         $state->setType($this->redis->hGet($id, 'type'));
@@ -41,6 +41,7 @@ class Redis implements IKeeper
      */
     public function save(int $id, State $state)
     {
+        $this->redis->hSet($id, 'userCommand', $state->getUserCommand());
         $this->redis->hSet($id, 'command', $state->getCommand());
         $this->redis->hSet($id, 'state', $state->getState());
         $this->redis->hSet($id, 'type', $state->getType());

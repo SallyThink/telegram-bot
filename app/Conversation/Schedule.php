@@ -13,9 +13,8 @@ use App\Conversation\Keeper\IKeeper;
 use App\Entity\State;
 use App\Message;
 use App\User;
-use Telegram;
 
-class Schedule
+class Schedule implements IFlows
 {
     protected $user;
     protected $message;
@@ -32,7 +31,7 @@ class Schedule
 
     public function start(User $user, Message $message, State $state)
     {
-        $state = $this->action($this->flows, $message, $state);
+        $state = $this->action($message, $state);
 
         if ($state->getState() === array_pop($this->flows)) {
             $state->setState($this->flows[0]);
@@ -42,11 +41,11 @@ class Schedule
         return $state;
     }
 
-    public function action(array $flows, Message $message, State $state)
+    public function action(Message $message, State $state)
     {
         $messenger = SendMessage::getInstance();
 
-        $current = empty($state->getState()) ? $flows[0] : $state->getState();
+        $current = empty($state->getState()) ? $this->flows[0] : $state->getState();
 
         /** @var AbstractAnswer $currentState */
         $currentState = new $current($state);
@@ -60,7 +59,7 @@ class Schedule
         }
         $state = $currentState->setParam($state, $message->text);
 
-        $next = $flows[array_search($state->getState(), $flows) + 1];
+        $next = $this->flows[array_search($state->getState(), $this->flows) + 1];
 
         $state->setState($next);
 
@@ -74,4 +73,19 @@ class Schedule
         return $state;
     }
 
+    /**
+     * @param array $flows
+     */
+    public function setFlows(array $flows)
+    {
+        $this->flows = $flows;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlows() : array
+    {
+        return $this->flows;
+    }
 }

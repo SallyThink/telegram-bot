@@ -35,7 +35,7 @@ class CommandName extends AbstractAnswer
      */
     public function setParam(State $state, $val)
     {
-        $state = $state->setCommand($val);
+        $state->setUserCommand($val);
 
         return $state;
     }

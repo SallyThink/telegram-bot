@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Command;
+use App\Conversation\com;
 use App\Conversation\Conversation;
 use App\Conversation\Keeper\Redis\Redis;
 use App\Entity\State;
@@ -46,7 +48,6 @@ class TelegramController extends Controller
 
     public function test(Message $message, User $user)
     {
-
+        
     }
-
 }

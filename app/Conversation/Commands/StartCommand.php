@@ -15,7 +15,7 @@ class StartCommand extends AbstractCommand implements ICommand
 
     public function handle() : State
     {
-        $text = '';
+        $text = [];
 
         $triggers = new General();
 

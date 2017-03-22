@@ -9,7 +9,11 @@ class State
      */
     protected $userId;
     /**
-     * @var string
+     * @var null|string
+     */
+    protected $userCommand;
+    /**
+     * @var null|string
      */
     protected $command;
     /**
@@ -44,13 +48,26 @@ class State
     {
         return $this->userId;
     }
-
     /**
      * @param int $userId
      */
     public function setUserId(int $userId)
     {
         $this->userId = (int)$userId;
+    }
+    /**
+     * @return null|string
+     */
+    public function getUserCommand()
+    {
+        return $this->userCommand;
+    }
+    /**
+     * @param null|string $userCommand
+     */
+    public function setUserCommand($userCommand)
+    {
+        $this->userCommand = $userCommand;
     }
     /**
      * @param string $command

@@ -12,7 +12,8 @@ class Type extends AbstractAnswer
     {
         $return = ['text' => 'Check', 'reply_markup' => Keyboard::make()
             ->row(Keyboard::button(['text'=>'Автобус']))
-            ->row(Keyboard::button(['text'=>'Троллейбус']), Keyboard::button(['text'=>'Трамвай']))];
+            ->row(Keyboard::button(['text'=>'Троллейбус']), Keyboard::button(['text'=>'Трамвай']))
+        ];
 
         return $return;
     }

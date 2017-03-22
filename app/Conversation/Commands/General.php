@@ -2,7 +2,6 @@
 
 namespace App\Conversation\Commands;
 
-use App\Conversation\SendMessage;
 use App\Entity\State;
 use App\Message;
 use App\User;
@@ -18,10 +17,7 @@ class General
         ];
 
     public function run(User $user, Message $message, State $state)
-    {dd('test');
-        if ($message->text == "\u{1F519}") {
-            SendMessage::getInstance()->addMessage(['text' => 'back']);
-        }
+    {
         foreach ($this->triggers as $trigger) {
 
             /** @var AbstractCommand $command */
@@ -47,12 +43,6 @@ class General
 
     public function getTriggers()
     {
-        $allTriggers = [];
-
-        foreach ($this->triggers as $trigger) {
-            $allTriggers = array_merge($allTriggers, (new $trigger(new User(), new Message(), new State()))->getTriggers());
-        }
-
-        return $allTriggers;
+        return $this->triggers;
     }
 }
