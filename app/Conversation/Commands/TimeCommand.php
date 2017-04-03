@@ -5,6 +5,8 @@ namespace App\Conversation\Commands;
 use App\Conversation\Helpers\TimeHelper;
 use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Message;
+use App\User;
 
 class TimeCommand extends AbstractCommand implements ICommand
 {
@@ -14,14 +16,14 @@ class TimeCommand extends AbstractCommand implements ICommand
         '/now',
     ];
 
-    public function handle() : State
+    public function triggerAction(User $user, Message $message) : State
     {
         $helper = new TimeHelper();
 
-        SendMessage::getInstance()->addMessage([
+        $this->messenger->addMessage([
             'text' => $helper->getTime()
         ]);
 
-        return $this->state;
+        return $this->getNewStateForTriggerAction($user);
     }
 }

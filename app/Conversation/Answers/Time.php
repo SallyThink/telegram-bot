@@ -10,6 +10,7 @@ use Telegram\Bot\Keyboard\Keyboard;
 class Time extends AbstractAnswer
 {
     protected $time;
+    protected $emptyTimeSentence = 'Walk by yourself';
 
     public function __construct(State $state)
     {
@@ -17,7 +18,9 @@ class Time extends AbstractAnswer
 
         $helper = new TimeHelper();
 
-        $this->time = implode(PHP_EOL, $helper->getNextTime($allTime));
+        $time = implode(PHP_EOL, $helper->getNextTime($allTime));
+
+        $this->time = $time == null ? $this->emptyTimeSentence : $time;
     }
 
     public function answer() : array

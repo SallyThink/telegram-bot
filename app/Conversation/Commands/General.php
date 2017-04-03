@@ -2,6 +2,7 @@
 
 namespace App\Conversation\Commands;
 
+use App\Conversation\Messenger\AbstractMessenger;
 use App\Entity\State;
 use App\Message;
 use App\User;
@@ -11,37 +12,42 @@ class General
     protected $triggers =
         [
           CreateCommand::class,
+          InfoCommand::class,
           TimeCommand::class,
           ListCommand::class,
-          StartCommand::class
+          StartCommand::class,
+          DeleteCommand::class,
         ];
 
-    public function run(User $user, Message $message, State $state)
+    public function run(User $user, Message $message, State $state, AbstractMessenger $messenger)
     {
         foreach ($this->triggers as $trigger) {
 
             /** @var AbstractCommand $command */
-            $command = new $trigger($user, $message, $state);
+            $command = new $trigger($messenger);
 
             if ($command->hasCommand($state)) {
-                $state = $command->start();
+                $state = $command->commandAction($user, $message, $state);
 
                 return $state;
             } elseif ($command->hasTrigger($message->text)) {
-                $state = $command->handle();
+                $state = $command->triggerAction($user, $message);
 
                 return $state;
             }
 
         }
 
-        $getCommand = new GetCommand($user, $message, $state);
-        $state = $getCommand->handle();
+        $getCommand = new GetCommand($messenger);
+        $state = $getCommand->triggerAction($user, $message, $messenger);
 
         return $state;
     }
 
-    public function getTriggers()
+    /**
+     * @return array
+     */
+    public function getTriggers() : array
     {
         return $this->triggers;
     }

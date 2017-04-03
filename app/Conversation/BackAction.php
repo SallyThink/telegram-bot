@@ -3,26 +3,31 @@
 namespace App\Conversation;
 
 use App\Conversation\Answers\AbstractAnswer;
+use App\Conversation\Answers\Factory;
 use App\Conversation\Answers\Type;
 use
     App\Conversation\Commands\AbstractCommand;
 use App\Conversation\Commands\General;
+use App\Conversation\Messenger\AbstractMessenger;
 use App\Entity\State;
 use App\Message;
 use App\User;
 
 class BackAction
 {
-
+    protected $messenger;
     private $defaultState = Type::class;
 
+    public function __construct(AbstractMessenger $messenger)
+    {
+        $this->messenger = $messenger;
+    }
+
     /**
-     * @param User $user
-     * @param Message $message
      * @param State $state
      * @return State
      */
-    public function action(User $user, Message $message, State $state) : State
+    public function action(State $state) : State
     {
         if ('' != $state->getCommand()) {
             $general = new General();
@@ -31,7 +36,7 @@ class BackAction
             foreach ($allCommands as $command)
             {
                 /** @var AbstractCommand $class */
-                $class = new $command($user, $message, $state);
+                $class = new $command($this->messenger);
                 if ($class->hasCommand($state) && $class instanceof IFlows) {
                     $flows = $class->getFlows();
                 }
@@ -78,8 +83,8 @@ class BackAction
     {
         $answer = empty($state->getState()) ? $this->defaultState : $state->getState();
         /** @var AbstractAnswer $answer */
-        $answer = new $answer($state);
+        $answer = Factory::create($answer, $state);
 
-        SendMessage::getInstance()->addMessage($answer->answer());
+        $this->messenger->addMessage($answer->answer());
     }
 }

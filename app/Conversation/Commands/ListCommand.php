@@ -3,8 +3,11 @@
 namespace App\Conversation\Commands;
 
 use App\Command;
+use App\Conversation\Answers\Command\CommandList;
 use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Message;
+use App\User;
 
 class ListCommand extends AbstractCommand implements ICommand
 {
@@ -16,26 +19,14 @@ class ListCommand extends AbstractCommand implements ICommand
         '/my',
     ];
 
-    public function handle() : State
+    public function triggerAction(User $user, Message $message) : State
     {
-        $messenger = SendMessage::getInstance();
+        $state = $this->getNewStateForTriggerAction($user);
 
-        $commands = Command::where('chat_id', $this->user->chat_id)->get();
+        $answer = new CommandList($state);
 
-        if ($commands->isEmpty()) {
-            $messenger->addMessage(['text' => 'You havent commands. Send /create for new command']);
+        $this->messenger->addMessage($answer->answer());
 
-            return $this->state;
-        }
-
-        $list = [];
-
-        foreach ($commands as $command) {
-            $list[] = $command->command;
-        }
-
-        SendMessage::getInstance()->addMessage(['text' => '<code>inline fixed-width code inline fixed-width code</code>' . PHP_EOL . '<pre>inline fixed-width code inline fixed-width code</pre>']);
-
-        return $this->state;
+        return $state;
     }
 }

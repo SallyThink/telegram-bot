@@ -3,6 +3,7 @@
 namespace App\Conversation;
 
 use App\Conversation\Answers\AbstractAnswer;
+use App\Conversation\Answers\Factory;
 use App\Conversation\Answers\Number;
 use App\Conversation\Answers\Stop;
 use App\Conversation\Answers\Route;
@@ -10,6 +11,7 @@ use App\Conversation\Answers\Time;
 use App\Conversation\Answers\Type;
 use App\Conversation\Helpers\Emoji;
 use App\Conversation\Keeper\IKeeper;
+use App\Conversation\Messenger\AbstractMessenger;
 use App\Entity\State;
 use App\Message;
 use App\User;
@@ -29,9 +31,9 @@ class Schedule implements IFlows
             Time::class
         ];
 
-    public function start(User $user, Message $message, State $state)
+    public function start(User $user, Message $message, State $state, AbstractMessenger $messenger)
     {
-        $state = $this->action($message, $state);
+        $state = $this->action($message, $state, $messenger);
 
         if ($state->getState() === array_pop($this->flows)) {
             $state->setState($this->flows[0]);
@@ -41,14 +43,17 @@ class Schedule implements IFlows
         return $state;
     }
 
-    public function action(Message $message, State $state)
+    /**
+     * @param Message $message
+     * @param State $state
+     * @param AbstractMessenger $messenger
+     * @return State
+     */
+    public function action(Message $message, State $state, AbstractMessenger $messenger) : State
     {
-        $messenger = SendMessage::getInstance();
-
         $current = empty($state->getState()) ? $this->flows[0] : $state->getState();
 
-        /** @var AbstractAnswer $currentState */
-        $currentState = new $current($state);
+        $currentState = Factory::create($current, $state);
 
         $validation = $currentState->validation($message);
 
@@ -57,17 +62,18 @@ class Schedule implements IFlows
             $messenger->addMessage($currentState->answer());
             return $state;
         }
+
         $state = $currentState->setParam($state, $message->text);
 
-        $next = $this->flows[array_search($state->getState(), $this->flows) + 1];
+        $nextFlowKey = $state->getState() === $this->flows[count($this->flows) - 1] ? 0 : array_search($state->getState(), $this->flows) + 1;
+        $next = $this->flows[$nextFlowKey];
 
         $state->setState($next);
 
         $emoji = new Emoji();
-        $emoji->type($state);
+        $emoji->type($state, $messenger);
 
-        /** @var AbstractAnswer $nextState */
-        $nextState = new $next($state);
+        $nextState = Factory::create($next, $state);
         $messenger->addMessage($nextState->answer());
 
         return $state;

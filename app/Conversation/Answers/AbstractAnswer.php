@@ -9,6 +9,8 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 abstract class AbstractAnswer
 {
+    protected $state;
+
     public function __construct(){}
 
     /**

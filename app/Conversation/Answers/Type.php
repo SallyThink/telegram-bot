@@ -30,17 +30,15 @@ class Type extends AbstractAnswer
         return $state;
     }
 
-    protected function translate(string $type)
+    /**
+     * @param string $type
+     * @return string
+     */
+    protected function translate(string $type) : string
     {
-        switch($type) {
-            case 'Автобус':
-                return 'Autobus';
-            case 'Троллейбус':
-                return 'Trolleybus';
-            case 'Трамвай':
-                return 'Tramway';
-        }
-        return $type;
+        $types = ['Автобус' => 'Autobus', 'Троллейбус' => 'Trolleybus', 'Трамвай' => 'Tramway'];
+
+        return $types[$type];
     }
 
     protected function getRules()

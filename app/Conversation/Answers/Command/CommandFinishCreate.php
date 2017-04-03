@@ -19,7 +19,7 @@ class CommandFinishCreate extends AbstractAnswer
     public function answer()
     {
         $return = [
-            'text' => 'Command successful created! Use ' . $this->state->getCommand(),
+            'text' => 'Command successful created! Use ' . $this->state->getUserCommand(),
             'reply_markup' => Keyboard::hide()
         ];
 

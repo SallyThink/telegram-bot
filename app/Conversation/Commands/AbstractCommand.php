@@ -2,6 +2,7 @@
 
 namespace App\Conversation\Commands;
 
+use App\Conversation\Messenger\AbstractMessenger;
 use App\Conversation\SendMessage;
 use App\Entity\State;
 use App\Message;
@@ -9,32 +10,18 @@ use App\User;
 
 abstract class AbstractCommand
 {
-    /**
-     * @var User
-     */
-    protected $user;
-    /**
-     * @var Message
-     */
-    protected $message;
-    /**
-     * @var State
-     */
-    protected $state;
     protected $triggers = [];
     protected $command;
+    protected $messenger;
+
 
     /**
      * AbstractCommand constructor.
-     * @param User $user
-     * @param Message $message
-     * @param State $state
+     * @param AbstractMessenger $messenger
      */
-    public function __construct(User $user, Message $message, State $state)
+    public function __construct(AbstractMessenger $messenger)
     {
-        $this->user = $user;
-        $this->message = $message;
-        $this->state = $state;
+        $this->messenger = $messenger;
     }
 
     /**
@@ -64,15 +51,41 @@ abstract class AbstractCommand
     }
 
     /**
+     * @return string|null
+     */
+    public function getCommand()
+    {
+        return $this->command;
+    }
+    /**
+     * @param User $user
+     * @param Message $message
      * @return State
      */
-    abstract public function handle() : State;
+    abstract public function triggerAction(User $user, Message $message) : State;
 
     /**
+     * @param User $user
+     * @param Message $message
+     * @param State $state
      * @return State
      */
-    public function start() : State
+    public function commandAction(User $user, Message $message, State $state) : State
     {
-        return new State();
+        return $state;
+    }
+
+    /**
+     * @param User $user
+     * @return State
+     */
+    protected function getNewStateForTriggerAction(User $user) : State
+    {
+        $state = new State();
+        $state->setCommand($this->command);
+        $state->setState(isset($this->flows[0]) ? $this->flows[0] : null);
+        $state->setUserId($user->chat_id);
+
+        return $state;
     }
 }

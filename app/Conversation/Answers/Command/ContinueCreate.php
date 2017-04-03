@@ -12,7 +12,7 @@ class ContinueCreate extends AbstractAnswer
     public function answer()
     {
         $return = [
-            'text' => 'want more?',
+            'text' => 'continue?',
             'reply_markup' => Keyboard::make([
                 'keyboard' => [
                     ['Yes'],

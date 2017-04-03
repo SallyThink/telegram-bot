@@ -7,6 +7,7 @@ use App\Conversation\Answers\Command\CommandFinishCreate;
 use App\Conversation\Answers\Command\CommandName;
 use App\Conversation\Answers\Command\CommandTime;
 use App\Conversation\Answers\Command\ContinueCreate;
+use App\Conversation\Answers\Factory;
 use App\Conversation\Answers\Number;
 use App\Conversation\Answers\Stop;
 use App\Conversation\Answers\Route;
@@ -39,17 +40,18 @@ class CreateCommand extends AbstractCommand implements ICommand, IFlows
         CommandFinishCreate::class,
     ];
 
-    public function start() : State
+    public function commandAction(User $user, Message $message, State $state) : State
     {
-        $this->addNewEmoji();
         $schedule = new Schedule();
         $schedule->setFlows($this->flows);
 
-        $state = $schedule->action($this->message, $this->state);
+        $state = $schedule->action($message, $state, $this->messenger);
 
         if ($state->getState() === ContinueCreate::class) {
-            $this->addCommand($state);
-            $this->addData($state);
+            $model = new Command();
+            $model->addCommand($user->chat_id, $state->getUserCommand());
+            $model->addData($user->chat_id, $state->getUserCommand(), $state->getType(),
+                $state->getNumber(), $state->getRoute(), $state->getStop(), $state->getTime());
         } elseif ($state->getState() === CommandFinishCreate::class) {
             $state->setCommand(null);
             $state->setState('');
@@ -58,64 +60,18 @@ class CreateCommand extends AbstractCommand implements ICommand, IFlows
         return $state;
     }
 
-
     /**
-     * @param State $state
-     */
-    protected function addCommand(State $state)
-    {
-        $model = new Command();
-
-        if (null === $model->getCommand($this->user->chat_id, $state->getUserCommand())) {
-            $model->chat_id = $this->user->chat_id;
-            $model->command = $state->getUserCommand();
-            $model->save();
-         }
-    }
-
-    /**
-     * @param State $state
-     */
-    protected function addData(State $state)
-    {
-        $model = (new Command())->getCommand($this->user->chat_id, $state->getUserCommand());
-        $data = is_null($model->data) ? [] : $model->data;
-        array_push($data, [
-            'type' => $state->getType(),
-            'number' => $state->getNumber(),
-            'route' => $state->getRoute(),
-            'stop' => $state->getStop(),
-            'time' => $state->getTime()
-        ]);
-        $model->data = $data;
-        $model->save();
-    }
-
-    /**
+     * @param User $user
+     * @param Message $message
      * @return State
      */
-    public function handle() : State
+    public function triggerAction(User $user, Message $message) : State
     {
-        $this->addNewEmoji();
-        SendMessage::getInstance()->addMessage((new CommandName(new State()))->answer());
-        $this->state->setCommand('/create');
-        $this->state->setState(CommandName::class);
+        $state = $this->getNewStateForTriggerAction($user);
 
-        return $this->state;
-    }
+        $this->messenger->addMessage(Factory::create($this->flows[0], $state)->answer());
 
-    protected function addNewEmoji()
-    {
-        $emoji = new Emoji();
-        $emoji->createCommand();
-    }
-
-    /**
-     * @param array $flows
-     */
-    public function setFlows(array $flows)
-    {
-        $this->flows = $flows;
+        return $state;
     }
 
     /**

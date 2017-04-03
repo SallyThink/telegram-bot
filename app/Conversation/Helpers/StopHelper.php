@@ -52,15 +52,22 @@ class StopHelper
      */
     protected function isOneRoute(array $one, array $two) : bool
     {
-
         $stops1 = Stop::where('type', $one['type'])->where('number', $one['number'])->where('route', $one['route'])->get()->first();
         $stops2 = Stop::where('type', $two['type'])->where('number', $two['number'])->where('route', $two['route'])->get()->first();
 
         $key1 = array_search($one['stop'], $stops1->stops);
         $key2 = array_search($two['stop'], $stops2->stops);
 
-        if ($stops1->stops[$key1-1] == $stops2->stops[$key2-1] || /* && */ $stops1->stops[$key1+1] == $stops2->stops[$key2+1])
-            return true;
+        if (isset($stops1->stops[$key1-1]) && isset($stops2->stops[$key2-1])) {
+            if ($stops1->stops[$key1-1] == $stops2->stops[$key2-1])
+                return true;
+        } elseif (isset($stops1->stops[$key1+1]) && isset($stops2->stops[$key2+1])) {
+            if ($stops1->stops[$key1+1] == $stops2->stops[$key2+1])
+                return true;
+        }
+
+        //if ($stops1->stops[$key1-1] == $stops2->stops[$key2-1] || /* && */ $stops1->stops[$key1+1] == $stops2->stops[$key2+1])
+        //  return true;
 
         return false;
     }

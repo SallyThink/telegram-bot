@@ -3,8 +3,11 @@
 namespace App\Conversation\Commands;
 
 use App\Command;
+use App\Conversation\Answers\Command\CommandStart;
 use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Message;
+use App\User;
 
 class StartCommand extends AbstractCommand implements ICommand
 {
@@ -13,21 +16,24 @@ class StartCommand extends AbstractCommand implements ICommand
         '/hello',
     ];
 
-    public function handle() : State
+    public function triggerAction(User $user, Message $message) : State
     {
-        $text = [];
+        $general = new General();
 
-        $triggers = new General();
+        $triggers = $general->getTriggers();
 
-        foreach ($triggers->getTriggers() as $trigger) {
-            $text .= $trigger . "\n";
+        $array = [];
+
+        foreach ($triggers as $trigger) {
+            /** @var AbstractCommand $obj */
+            $obj = new $trigger();
+            $array = array_merge($array, array_slice($obj->getTriggers(), 0 , 1));
         }
 
-        SendMessage::getInstance()->addMessage([
-            'parse_mode' => 'HTML',
-            'text' => $text,
-        ]);
+        $answer = new CommandStart($array);
 
-        return $this->state;
+        $this->messenger->addMessage($answer->answer());
+
+        return $this->getNewStateForTriggerAction($user);
     }
 }

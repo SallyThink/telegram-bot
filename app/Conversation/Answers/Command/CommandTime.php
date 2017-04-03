@@ -11,7 +11,7 @@ class CommandTime extends AbstractAnswer
 
     public function answer()
     {
-        $return = [
+        return [
             'text' => 'Check time',
             'reply_markup' => Keyboard::make([
                 'keyboard' => [
@@ -22,8 +22,6 @@ class CommandTime extends AbstractAnswer
                 'one_time_keyboard' => false,
             ])
         ];
-
-        return $return;
     }
 
     /**

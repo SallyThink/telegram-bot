@@ -6,7 +6,10 @@ use App\Command;
 use App\Conversation\com;
 use App\Conversation\Conversation;
 use App\Conversation\Keeper\Redis\Redis;
+use App\Conversation\Messenger\TelegramMessenger;
+use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Exceptions\AnswerException;
 use App\Exceptions\ParserException;
 use App\Http\Controllers\Controller;
 use App\Message;
@@ -38,16 +41,19 @@ class TelegramController extends Controller
 
         $conversation = new Conversation($user, $message, $redis);
 
+        $messenger = new TelegramMessenger();
+
         try {
-            $conversation->start();
+            $conversation->start($messenger);
         } catch (ParserException $e) {
             $e->render($user->chat_id);
-        } // TODO:: catch error exception
+        } catch (AnswerException $e) {
+            $e->render($user->chat_id);
+        }// TODO:: catch error exception
 
     }
 
     public function test(Message $message, User $user)
     {
-        
     }
 }

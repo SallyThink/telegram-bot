@@ -3,33 +3,39 @@
 namespace App\Conversation\Commands;
 
 use App\Command;
-use App\Conversation\Answers\Command\GetCommandTime;
+use App\Conversation\Answers\Command\CommandGet;
 use App\Conversation\Answers\Command\PossibleCommand;
 use App\Conversation\CheckWay;
 use App\Conversation\Helpers\StopHelper;
+use App\Conversation\Messenger\AbstractMessenger;
 use App\Conversation\SendMessage;
 use App\Entity\State;
+use App\Message;
+use App\User;
 
 class GetCommand extends AbstractCommand implements ICommand
 {
 
+
     /**
+     * @param User $user
+     * @param Message $message
      * @return State
      */
-    public function handle() : State
+    public function triggerAction(User $user, Message $message) : State
     {
-        $messenger = SendMessage::getInstance();
-        $command = (new Command())->getCommand($this->user->chat_id, $this->message->text);
+        $state = $this->getNewStateForTriggerAction($user);
+
+        $command = (new Command())->getCommand($user->chat_id, $message->text);
 
         if (null === $command) {
-            $this->possibleCommand();
-            return $this->state;
+            $this->possibleCommand($user, $message);
+            return $state;
         }
 
         $helper = new StopHelper();
-        $command = $helper->checkOneStops($command->data);
 
-        $state = new State();
+        $command = $helper->checkOneStops($command->data);
 
         foreach ($command as $v) {
             $state->setStop($v['stop']);
@@ -49,18 +55,18 @@ class GetCommand extends AbstractCommand implements ICommand
                 $numbers[] = $v['number'][$i] ;
             }
 
-            $answer = new GetCommandTime($state, $numbers, $allTime);
+            $answer = new CommandGet($state, $numbers, $allTime);
 
-            $messenger->addMessage($answer->answer());
+            $this->messenger->addMessage($answer->answer());
         }
 
-        return $this->state;
+        return $state;
     }
 
-    protected function possibleCommand()
+    protected function possibleCommand(User $user, Message $message)
     {
         $triggers = (new General())->getTriggers();
-        $userCommands = Command::where('chat_id', $this->user->chat_id)->get(['command']);
+        $userCommands = Command::where('chat_id', $user->chat_id)->get(['command']);
 
         if ($userCommands->isNotEmpty()) {
             $userCommands = $userCommands->transform(function ($v) {
@@ -71,14 +77,12 @@ class GetCommand extends AbstractCommand implements ICommand
 
         $result = [];
         foreach (array_merge($triggers, $userCommands) as $v) {
-            if (3 > levenshtein($this->message->text, $v))
+            if (3 > levenshtein($message->text, $v))
                 $result[] = $v;
         }
 
         $answer = new PossibleCommand($result);
 
-        SendMessage::getInstance()->addMessage($answer->answer());
-
-        return $this->state;
+        $this->messenger->addMessage($answer->answer());
     }
 }
