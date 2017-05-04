@@ -2,7 +2,6 @@
 
 namespace App;
 
-
 class Command extends \Eloquent
 {
     protected $fillable = ['chat_id', 'command', 'data'];
