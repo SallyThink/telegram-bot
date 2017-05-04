@@ -6,6 +6,9 @@ class Message extends \Eloquent
 {
     protected $fillable = ['chat_id', 'message_id', 'text'];
 
+    public function __contruct()
+    {
+    }
 
     /**
      * @param \Telegram\Bot\Objects\Message $message
