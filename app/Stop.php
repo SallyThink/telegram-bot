@@ -17,4 +17,9 @@ class Stop extends \Eloquent
     {
         return $this->where($vars)->get()->first();
     }
+
+    public function getStops()
+    {
+        return [];
+    }
 }
