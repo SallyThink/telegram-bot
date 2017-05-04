@@ -2,20 +2,15 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Command;
-use App\Conversation\com;
 use App\Conversation\Conversation;
 use App\Conversation\Keeper\Redis\Redis;
 use App\Conversation\Messenger\TelegramMessenger;
-use App\Conversation\SendMessage;
-use App\Entity\State;
 use App\Exceptions\AnswerException;
 use App\Exceptions\ParserException;
 use App\Http\Controllers\Controller;
 use App\Message;
 use App\User;
 use Telegram;
-use Telegram\Bot\Keyboard\Keyboard;
 
 class TelegramController extends Controller
 {
