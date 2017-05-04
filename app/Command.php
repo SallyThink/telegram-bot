@@ -7,6 +7,10 @@ class Command extends \Eloquent
     protected $fillable = ['chat_id', 'command', 'data'];
     protected $casts = ['data' => 'json'];
 
+    public function __construct ()
+    {
+    }
+
     /**
      * @param $chatId
      * @param $commandName

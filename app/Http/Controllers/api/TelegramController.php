@@ -15,7 +15,36 @@ use Telegram;
 class TelegramController extends Controller
 {
 
+    public function start(User $user, Message $message)
+    {
+        $update = Telegram::bot()->getWebhookUpdate();
 
+        $telegramMessage = $update->getMessage();
+        $telegramUser = $telegramMessage->getFrom();
+
+        /**
+         * @var User $user
+         */
+        $user = $user->store($telegramUser);
+
+        /**
+         * @var Message $message
+         */
+        $message = $message->store($telegramMessage);
+
+        $redis = new Redis();
+
+        $conversation = new Conversation($user, $message, $redis);
+
+        $messenger = new TelegramMessenger();
+
+        try {
+            $conversation->start($messenger);
+        } catch (ParserException $e) {
+            $e->render($user->chat_id);
+        } catch (AnswerException $e) {
+            $e->render($user->chat_id);
+        }// TODO:: catch error exception
 
     }
 
