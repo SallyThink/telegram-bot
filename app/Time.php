@@ -13,4 +13,8 @@ class Time extends \Eloquent
         return $this->where($vars)->get()->first();
     }
 
+    public function test()
+    {
+        return [];
+    }
 }

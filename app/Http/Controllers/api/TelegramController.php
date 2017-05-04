@@ -15,10 +15,6 @@ use Telegram;
 class TelegramController extends Controller
 {
 
-    public function test()
-    {
-        
-    }
     public function start(User $user, Message $message)
     {
         $update = Telegram::bot()->getWebhookUpdate();
