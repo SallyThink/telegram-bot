@@ -11,11 +11,6 @@ class Command extends \Eloquent
     {
     }
 
-    /**
-     * @param $chatId
-     * @param $commandName
-     * @return array
-     */
     public function getCommand($chatId, $commandName)
     {
         return $this->where('chat_id', $chatId)->where('command', $commandName)->get()->first();
