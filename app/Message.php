@@ -10,10 +10,6 @@ class Message extends \Eloquent
     {
     }
 
-    /**
-     * @param \Telegram\Bot\Objects\Message $message
-     * @return \Illuminate\Database\Eloquent\Model
-     */
     public function store(\Telegram\Bot\Objects\Message $message)
     {
         return $this->create(
