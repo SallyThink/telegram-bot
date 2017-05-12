@@ -9,11 +9,6 @@ class User extends \Eloquent
         'chat_id', 'first_name', 'last_name', 'username',
     ];
 
-
-    /**
-     * @param \Telegram\Bot\Objects\User $user
-     * @return mixed
-     */
     public function store(\Telegram\Bot\Objects\User $user)
     {
         $values = [
